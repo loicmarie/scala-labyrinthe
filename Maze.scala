@@ -3,10 +3,10 @@
  * 2010-10-16
  */
 
-object Maze {
+class Maze(widthP: Int, heightP: Int) {
 
-   private var width:   Int = 0
-   private var height:  Int = 0
+   private var width:   Int = widthP
+   private var height:  Int = heightP
    private var maze:    Array[Array[Int]] = null
 
    /* Show the maze. */
@@ -48,9 +48,7 @@ object Maze {
    }
 
    /* Generate a maze. */
-   def generate(w: Int, h: Int) {
-      width = w
-      height = h
+   def generate {
       maze = Array.fill[Int](height, width)(1)
       maze(1)(1) = 0
       carve(1, 1)
@@ -58,10 +56,10 @@ object Maze {
       maze(height - 1)(width - 2) = 0
    }
 
-   /* Generate and display a random maze. */
-   def main(args: Array[String]) {
-      generate(39, 23)
-      show
+   /* Get maze. */
+   def get: Array[Array[Int]] = {
+      generate
+      maze
    }
 
 }
