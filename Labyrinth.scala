@@ -34,20 +34,35 @@ object MazeBuilder {
  
  
   def build(width: Int, height: Int): Grid = {
-    val exit = Loc(width-1, height-1)
-    val grid = buildImpl(exit, new Grid(width, height, Set(), Set()))
-	var j    = 1
-	grid.printGrid.zipWithIndex.foreach { case (x,i) => 
-		if(j+1%3==0) println(x) 
-		else 		 print (x)
-		j = j+1
-	}
+    val exit  = Loc(width-1, height-1)
+    val grid  = buildImpl(exit, new Grid(width, height, Set(), Set()))
+	  var i     = 0
+    var isTop = false
+    grid.printGrid.foreach(print)
+    grid.printGrid.foreach { e =>
+      if(isTop){
+        if(i%2==0){
+          if(i%5==0){
+            println(e)
+            isTop = !isTop
+          } else print(e)
+        }
+      } else {
+        if(i%2==0){
+          if(i%5==0){
+            println(e)
+            isTop = !isTop
+          } else print(e)
+        }
+      }
+      i = i+1
+    }
 	grid
 	
   }  
   
   def main(args: Array[String]) {
-	build(3,3)
+	build(4,4)
 	print("ok")
   }
   
@@ -78,6 +93,7 @@ class Grid(val width: Int, val height: Int, val doors: Set[Door], val visited: S
     val row = (0 until width).toList.map(x => printCell(Loc(x, y)))
     val rightSide = if (y == height-1) " " else "|"
     val newRow = row :+ List("+", rightSide)
+    println(newRow)
 	newRow.flatten
   }
  
