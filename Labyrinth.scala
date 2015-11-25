@@ -34,36 +34,15 @@ object MazeBuilder {
  
  
   def build(width: Int, height: Int): Grid = {
-    val exit  = Loc(width-1, height-1)
-    val grid  = buildImpl(exit, new Grid(width, height, Set(), Set()))
-	  var i     = 0
-    var isTop = false
-    grid.printGrid.foreach(print)
-    grid.printGrid.foreach { e =>
-      if(isTop){
-        if(i%2==0){
-          if(i%5==0){
-            println(e)
-            isTop = !isTop
-          } else print(e)
-        }
-      } else {
-        if(i%2==0){
-          if(i%5==0){
-            println(e)
-            isTop = !isTop
-          } else print(e)
-        }
-      }
-      i = i+1
-    }
+    val exit = Loc(width-1, height-1)
+    val grid = buildImpl(exit, new Grid(width, height, Set(), Set()))
+	grid.printGrid()
 	grid
 	
   }  
   
   def main(args: Array[String]) {
-	build(4,4)
-	print("ok")
+	build(12,12)
   }
   
 }
@@ -82,29 +61,50 @@ class Grid(val width: Int, val height: Int, val doors: Set[Door], val visited: S
   def neighbors(current: Loc): Set[Loc] = 
     directions.map(current + _).filter(inBounds(_)) -- visited
  
-  def printGrid(): List[String] = {
-    (0 to height).toList.flatMap(y => printRow(y))
+  def printGrid() {
+    //(0 to height).toList.flatMap(y => printRow(y))
+	var j = 0
+	for(j <- 0 to width-1){
+		printRow(j)
+		println("")
+	}
+	for(j <- 0 to width-1){
+		print("[][][]")
+	}
+	print("[]")
   }
  
   private def inBounds(loc: Loc): Boolean = 
     loc.x >= 0 && loc.x < width && loc.y >= 0 && loc.y < height
  
-  private def printRow(y: Int): List[String] = {
+  def printRow(y: Int): List[List[String]] = {
     val row = (0 until width).toList.map(x => printCell(Loc(x, y)))
-    val rightSide = if (y == height-1) " " else "|"
-    val newRow = row :+ List("+", rightSide)
-    println(newRow)
-	newRow.flatten
+    val rightSide = if (y == height-1) "  " else "[]"
+    val newRow = row :+ List("[]", rightSide)
+	var top = List[String]()
+	var left = List[String]()
+	newRow.zipWithIndex.foreach{ case(x,i) =>
+		top = top :+ x(0)
+		left = left :+ x(1)
+	}
+	top.zipWithIndex.foreach{ case(x,i) =>
+		print(x)
+	}
+	println("")
+	left.zipWithIndex.foreach{ case(x,i) =>
+		print(x)
+	}
+	newRow
   }
  
   private val entrance = Loc(0,0)
  
-  private def printCell(loc: Loc): List[String] = {
+  def printCell(loc: Loc): List[String] = {
     if (loc.y == height) 
-      List("+--")
+      List("[][][]")
     else List(
-      if (openNorth(loc)) "+  " else "+--", 
-      if (openWest(loc) || loc == entrance) "   " else "|  "
+      if (openNorth(loc)) "[]  []" else "[][][]", 
+      if (openWest(loc) || loc == entrance) "      " else "[]    "
     )
   }
  
