@@ -42,7 +42,7 @@ object MazeBuilder {
   }  
   
   def main(args: Array[String]) {
-	build(12,12)
+	build(24,24)
   }
   
 }
@@ -63,15 +63,15 @@ class Grid(val width: Int, val height: Int, val doors: Set[Door], val visited: S
  
   def printGrid() {
     //(0 to height).toList.flatMap(y => printRow(y))
-	var j = 0
-	for(j <- 0 to width-1){
-		printRow(j)
-		println("")
-	}
-	for(j <- 0 to width-1){
-		print("[][][]")
-	}
-	print("[]")
+  	var j = 0
+  	for(j <- 0 to width-1){
+  		printRow(j)
+  		println("")
+  	}
+  	for(j <- 0 to width-1){
+  		print("[][][]")
+  	}
+  	print("[]")
   }
  
   private def inBounds(loc: Loc): Boolean = 
