@@ -19,7 +19,8 @@ object MazeTypes {
 }
  
 import MazeTypes._
-object MazeBuilder {
+
+object Maze3D {
  
   def shuffle[T](set: Set[T]): List[T] = Random.shuffle(set.toList)
  
@@ -34,13 +35,12 @@ object MazeBuilder {
     newgrid
   }
  
- 
   def build(width: Int, height: Int, depth: Int): Grid = {
     val exit = Loc(width-1, height-1, depth-1)
     val grid = buildImpl(exit, new Grid(width, height, depth, Set(), Set()))
 	//grid.printMaze()
 	print(grid.get)
-	
+	grid
   }  
   
   def main(args: Array[String]) {
@@ -57,11 +57,9 @@ class Cell() {
   def setOpenNorth {
     openNorth = true
   }
-
   def setOpenWest {
     openWest = true
   }
-
   def setOpenUp {
     openUp = true
   }
@@ -87,9 +85,13 @@ class Grid(val width: Int, val height: Int, val depth: Int, val doors: Set[Door]
     var y = 0
     var z = 0
     var current = new Loc(0,0,0)
-    for(x <- 0 to width-1){
+    for(z <- 0 to depth-1){
+		print(x)
       for(y <- 0 to height-1){
-        for(z <- 0 to depth-1){
+		print(y)
+		for(x <- 0 to width-1){
+		print(z)
+		  print(maze(z)(y)(x))
           current = new Loc(x,y,z)
           if(openUp(current)) maze(z)(y)(x).setOpenUp
           if(openWest(current)) maze(z)(y)(x).setOpenWest
@@ -97,6 +99,7 @@ class Grid(val width: Int, val height: Int, val depth: Int, val doors: Set[Door]
         }
       }
     }
+	print(maze)
     maze
   }
 
@@ -148,11 +151,13 @@ class Grid(val width: Int, val height: Int, val depth: Int, val doors: Set[Door]
   private val entrance = Loc(0,0,0)
  
   def printCell(loc: Loc): List[String] = {
+	var midVal = "    "
+	if(openUp(loc)) midVal = "XX  " 
     if (loc.y == height) 
       List("[][][]")
     else List(
       if (openNorth(loc)) "[]  []" else "[][][]", 
-      if (openWest(loc) || loc == entrance) "      " else "[]    "
+      if (openWest(loc) || loc == entrance) "  ".concat(midVal) else "[]".concat(midVal)
     )
   }
  
