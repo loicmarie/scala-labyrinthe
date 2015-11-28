@@ -14,11 +14,33 @@ class MazeSolver(_maze: Array[Array[Array[Cell]]]) {
 	def isGoal(x: Int, y: Int, z: Int): Boolean = {
 		return (x==0 && y==0 && z==0)		
 	}
-	def canAccess(): ={
+	def canAccess(x: Int, y: Int, z:Int, x1: Int, y1: Int, z1:Int): Boolean = {
 		
+		
+		
+		if (x==0 && y==0 && z== 0){
+		return true
+		}
+		else if (x==0 && y==0 && z== 1){
+		return true
+		}
+		else if (x==0 && y==1 && z== 0){
+		return true
+		}
+		else if (x==1 && y==0 && z== 0){
+		return true
+		}
+		else if (x==0 && y==0 && z== 0){
+		return true
+		}
+		else if (x==0 && y==0 && z== 0){
+		return true
+		}
+		else if (x==0 && y==0 && z== 0){
+		return true
+		}
 	}
-	def inBounds(): ={
-	}
+
 }
 
 
