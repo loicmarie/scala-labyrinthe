@@ -20,7 +20,11 @@ object MazeTypes {
  
 import MazeTypes._
 
-object Maze3D {
+class Maze3D(_width: Int, _height: Int, _depth: Int) {
+
+  var width  = _width
+  var height = _height
+  var depth  = _depth
  
   def shuffle[T](set: Set[T]): List[T] = Random.shuffle(set.toList)
  
@@ -35,34 +39,25 @@ object Maze3D {
     newgrid
   }
  
-  def build(width: Int, height: Int, depth: Int): Grid = {
+  def build(): Array[Array[Array[Cell]]] = {
     val exit = Loc(width-1, height-1, depth-1)
     val grid = buildImpl(exit, new Grid(width, height, depth, Set(), Set()))
-	//grid.printMaze()
-	print(grid.get)
-	grid
+    grid.printMaze
+	  grid.get
   }  
-  
-  def main(args: Array[String]) {
-    build(8,8,3)
-  }
-  
 }
 
 class Cell() {
   var openNorth = false
-  var openWest = false
-  var openUp = false
+  var openWest  = false
+  var openUp    = false
+  var marked    = false
 
-  def setOpenNorth {
-    openNorth = true
-  }
-  def setOpenWest {
-    openWest = true
-  }
-  def setOpenUp {
-    openUp = true
-  }
+  def setOpenNorth = openNorth = true
+  def setOpenWest  = openWest  = true
+  def setOpenUp    = openUp    = true
+  def mark         = marked    = true
+  def unmark       = marked    = false
 }
 
 class Grid(val width: Int, val height: Int, val depth: Int, val doors: Set[Door], val visited: Set[Loc]) {
@@ -79,19 +74,16 @@ class Grid(val width: Int, val height: Int, val depth: Int, val doors: Set[Door]
   def neighbors(current: Loc): Set[Loc] = 
     directions.map(current + _).filter(inBounds(_)) -- visited
  
-  def get(): List[List[List[Cell]]] = {
-    var maze = List[List[List[Cell]]]()
+  def get(): Array[Array[Array[Cell]]] = {
+    var maze = Array.ofDim[Cell](depth, height, width)
     var x = 0
     var y = 0
     var z = 0
     var current = new Loc(0,0,0)
     for(z <- 0 to depth-1){
-		print(x)
       for(y <- 0 to height-1){
-		print(y)
-		for(x <- 0 to width-1){
-		print(z)
-		  print(maze(z)(y)(x))
+		    for(x <- 0 to width-1){
+		      maze(z)(y)(x) = new Cell()
           current = new Loc(x,y,z)
           if(openUp(current)) maze(z)(y)(x).setOpenUp
           if(openWest(current)) maze(z)(y)(x).setOpenWest
@@ -99,7 +91,6 @@ class Grid(val width: Int, val height: Int, val depth: Int, val doors: Set[Door]
         }
       }
     }
-	print(maze)
     maze
   }
 
@@ -111,14 +102,13 @@ class Grid(val width: Int, val height: Int, val depth: Int, val doors: Set[Door]
   }
 
   def printGrid(z: Int) {
-    //(0 to height).toList.flatMap(y => printRow(y))
   	var j = 0
   	for(j <- 0 to width-1){
   		printRow(z, j)
   		println("")
   	}
   	for(j <- 0 to width-1){
-  		print("[][][]")
+  		print("[][]")
   	}
   	print("[]")
     j = 0
@@ -151,12 +141,15 @@ class Grid(val width: Int, val height: Int, val depth: Int, val doors: Set[Door]
   private val entrance = Loc(0,0,0)
  
   def printCell(loc: Loc): List[String] = {
-	var midVal = "    "
-	if(openUp(loc)) midVal = "XX  " 
+  var midValCount = 1
+  if(openDown(loc)) midValCount = midValCount+2
+  if(openUp(loc)) midValCount = midValCount+1
+	var midVal = "  "
+	if(midValCount != 1) midVal = " ".concat(midValCount.toString) 
     if (loc.y == height) 
       List("[][][]")
     else List(
-      if (openNorth(loc)) "[]  []" else "[][][]", 
+      if (openNorth(loc)) "[]  " else "[][]", 
       if (openWest(loc) || loc == entrance) "  ".concat(midVal) else "[]".concat(midVal)
     )
   }
@@ -166,6 +159,8 @@ class Grid(val width: Int, val height: Int, val depth: Int, val doors: Set[Door]
   def openWest(loc: Loc): Boolean = openInDirection(loc, West)
 
   def openUp(loc: Loc): Boolean = openInDirection(loc, Up)
+
+  def openDown(loc: Loc): Boolean = openInDirection(loc, Down)
  
   private def openInDirection(loc: Loc, dir: Direction): Boolean = 
     doors.contains(Door(loc, loc + dir)) || doors.contains(Door(loc + dir, loc))
