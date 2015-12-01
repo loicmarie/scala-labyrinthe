@@ -8,7 +8,7 @@ object HelloWorld {
   }
 }
 
-object SecondSwingApp extends SimpleGUIApplication {
+object SecondSwingApp extends SimpleSwingApplication {
   def top = new MainFrame {
 
     val generator = new Maze3D(20, 20, 3)
