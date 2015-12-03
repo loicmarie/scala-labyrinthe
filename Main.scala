@@ -22,15 +22,15 @@ object SecondSwingApp extends SimpleSwingApplication {
 	var widthBloc = widthCell/2
 	var heightBloc = heightCell/2
 
-	var widthScreen  = widthApp - 2*widthBloc
-	var heightScreen = heightApp -2*heightBloc
+	var widthScreen  = widthApp - widthBloc
+	var heightScreen = heightApp - heightBloc
     var button1 = new Button {
       text = "Click me"
     }
 
     contents = new DataPanel(maze, widthCell, heightCell, widthBloc, heightBloc) {
       preferredSize = new Dimension(widthScreen, heightScreen)
-      contents += button1
+      // contents += button1
     }
     
 
