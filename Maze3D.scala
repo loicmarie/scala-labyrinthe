@@ -55,8 +55,11 @@ class Cell() {
   var markedTest    = false
 
   def setOpenNorth = openNorth = true
+  def setCloseNorth = openNorth = false
   def setOpenWest  = openWest  = true
+  def setCloseWest  = openWest  = false
   def setOpenUp    = openUp    = true
+  def setCloseUp    = openUp    = false
   def mark         = marked    = true
   def markTest         = markedTest    = true
   def unmark       = marked    = false

@@ -6,9 +6,12 @@ object SecondSwingApp extends SimpleSwingApplication {
 
     val generator = new Maze3D(20, 20, 1)
     val maze = generator.build
+
+    //maze(maze.length-1)(maze(maze.length-1).length-1)(maze(maze(maze.length-1).length-1).length-1).setOpenEst
+    maze(0)(0)(0).setOpenWest
 	
 	var solver = new DeadEndFiller(maze)
-	solver.fillDeadEnd
+	solver.findDeadEnds
 
 	var widthApp  = 700
 	var heightApp = 700
@@ -21,10 +24,23 @@ object SecondSwingApp extends SimpleSwingApplication {
 
 	var widthScreen  = widthApp - 2*widthBloc
 	var heightScreen = heightApp -2*heightBloc
+    var button1 = new Button {
+      text = "Click me"
+    }
 
     contents = new DataPanel(maze, widthCell, heightCell, widthBloc, heightBloc) {
       preferredSize = new Dimension(widthScreen, heightScreen)
+      contents += button1
     }
+    
+
+    //add button to panel
+    
+
+    // listenTo(button1) 
+    // reactions += {
+    //   case ButtonClicked(_) => print("ok")
+    // } 
   }
 }  
 
