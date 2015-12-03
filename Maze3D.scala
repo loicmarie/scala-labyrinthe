@@ -52,11 +52,13 @@ class Cell() {
   var openWest  = false
   var openUp    = false
   var marked    = false
+  var markedTest    = false
 
   def setOpenNorth = openNorth = true
   def setOpenWest  = openWest  = true
   def setOpenUp    = openUp    = true
   def mark         = marked    = true
+  def markTest         = markedTest    = true
   def unmark       = marked    = false
 }
 
