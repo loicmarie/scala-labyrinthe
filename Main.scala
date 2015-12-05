@@ -1,11 +1,11 @@
-import java.awt.{Color, Graphics2D, Dimension}
+import java.awt.{Color, Graphics2D, Dimension, Stroke, BasicStroke}
 import scala.swing._
 import scala.swing.event._
 
 object SecondSwingApp extends SimpleSwingApplication {
   def top = new MainFrame {
 
-    val generator = new Maze3D(15, 15, 3)
+    val generator = new Maze3D(30, 30, 3)
     var maze = generator.build
 
     var depth = 0
@@ -135,6 +135,8 @@ class DataPanel(maze: Array[Array[Array[Cell]]], widthCell: Double, heightCell: 
       var i = 0
       var j = 0
       var openDown = false
+      var isNorthMarked = false
+      var isWestMarked = false
       g.setColor(Color.BLACK)
       for(j <- 0 to floor.length-1){
       	x = 0.0
@@ -143,7 +145,9 @@ class DataPanel(maze: Array[Array[Array[Cell]]], widthCell: Double, heightCell: 
 	      	if(j == floor.length-1)    g.fill(new Rectangle(x.toInt, (y + heightCell).toInt, (widthCell+1).toInt, (heightBloc+1).toInt))
       		if(currentDepth > 0) openDown = maze(currentDepth-1)(j)(i).openUp
           else openDown = false
-          drawCell(g, x, y, floor(j)(i), openDown, widthBloc, heightBloc)
+          if(j>0 && maze(currentDepth)(j-1)(i).marked) isNorthMarked = true
+          if(i>0 && maze(currentDepth)(j)(i-1).marked) isWestMarked = true
+          drawCell(g, x, y, floor(j)(i), openDown, widthBloc, heightBloc, isNorthMarked, isWestMarked)
       		x = x + widthCell
       	}
       	y = y + heightCell
@@ -151,12 +155,26 @@ class DataPanel(maze: Array[Array[Array[Cell]]], widthCell: Double, heightCell: 
 	  g.fill(new Rectangle(x.toInt, y.toInt, (widthBloc+1).toInt, (heightBloc+1).toInt))
   }
 
-  def drawCell(g: Graphics2D, x: Double, y: Double, cell: Cell, openDown: Boolean, widthBlock: Double, heightBlock: Double) {
-  	var i = 0
+  def drawCell(g: Graphics2D, x: Double, y: Double, cell: Cell, openDown: Boolean, widthBlock: Double, heightBlock: Double, isNorthMarked: Boolean, isWestMarked: Boolean) {
+  	
+    var thickness = 4;
+    g.setStroke(new BasicStroke(thickness));
+
+    var i = 0
   	g.fill(new Rectangle(x.toInt, y.toInt, (widthBlock+1).toInt, (heightBlock+1).toInt))
     g.setColor(Color.BLACK)
   	if(!cell.openNorth) g.fill(new Rectangle((x + widthBlock).toInt, y.toInt, (widthBlock+1).toInt, (heightBlock+1).toInt))
-  	if(!cell.openWest) g.fill(new Rectangle(x.toInt, (y + heightBlock).toInt, (widthBlock+1).toInt, (heightBlock+1).toInt))
+    else if(cell.marked && isNorthMarked) {
+      g.setColor(Color.GREEN)
+      g.fill(new Rectangle((x + widthBlock).toInt, y.toInt, (widthBlock+1).toInt, (heightBlock+1).toInt))
+      g.setColor(Color.BLACK)
+    }
+    if(!cell.openWest) g.fill(new Rectangle(x.toInt, (y + heightBlock).toInt, (widthBlock+1).toInt, (heightBlock+1).toInt))
+    else if(cell.marked && isWestMarked) {
+      g.setColor(Color.GREEN)
+      g.fill(new Rectangle(x.toInt, (y + heightBlock).toInt, (widthBlock+1).toInt, (heightBlock+1).toInt))
+      g.setColor(Color.BLACK)
+    }
   	if(cell.marked) {
   		g.setColor(Color.GREEN)
       g.fill(new Rectangle((x + widthBlock).toInt, (y + heightBlock).toInt, (widthBlock+1).toInt, (heightBlock+1).toInt))
@@ -166,10 +184,9 @@ class DataPanel(maze: Array[Array[Array[Cell]]], widthCell: Double, heightCell: 
       g.fill(new Rectangle((x + widthBlock).toInt, (y + heightBlock).toInt, (widthBlock+1).toInt, (heightBlock+1).toInt))
     }
 
-
     if(cell.openUp || openDown) {
       if(cell.openUp && openDown) g.setColor(Color.GREEN)
-      else if(cell.openUp) g.setColor(Color.YELLOW)
+      else if(cell.openUp) g.setColor(Color.RED)
       else if(openDown) g.setColor(Color.BLUE)
     	g.draw(new Rectangle((x + widthBlock).toInt, (y + heightBlock).toInt, (widthBlock+1).toInt, (heightBlock+1).toInt))
     }

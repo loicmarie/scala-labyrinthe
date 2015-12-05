@@ -98,8 +98,23 @@ class DeadEndFiller(_maze: Array[Array[Array[Cell]]], _mazeCopy: Array[Array[Arr
 			if(y < maze(maze.length-1).length-1 && isDeadEnd(x, y+1, z)) fillDeadEnd(x, y+1, z, _num)
 			if(z < maze.length-1 && isDeadEnd(x, y, z+1)) fillDeadEnd(x, y, z+1, _num)
 
-			init()
+			if(countDeadEnds > 0) init()
 		}
+	}
+
+	def countDeadEnds(): Int = {
+	    var x = 0
+	    var y = 0
+	    var z = 0
+	    var num = 0
+	    for(z <- 0 to maze.length-1){
+	      for(y <- 0 to maze(z).length-1){
+	        for(x <- 0 to maze(z)(y).length-1){
+	          if(isDeadEnd(x,y,z)) num = num+1
+	        }
+	      }
+	    }
+	    num
 	}
 
 	def getSolution: Array[Array[Array[Cell]]] = {
@@ -128,7 +143,7 @@ class DeadEndFiller(_maze: Array[Array[Array[Cell]]], _mazeCopy: Array[Array[Arr
 		maze(z)(y)(x).openUp
 	
 	def openDown(x: Int, y: Int, z: Int): Boolean = {
-		if(z < maze.length-1) maze(z+1)(y)(x).openUp
+		if(z > 0) maze(z-1)(y)(x).openUp
 		else    			false
 	}
 	
@@ -152,7 +167,7 @@ class DeadEndFiller(_maze: Array[Array[Array[Cell]]], _mazeCopy: Array[Array[Arr
 		maze(z)(y)(x).setCloseUp
 	
 	def setCloseDown(x: Int, y: Int, z: Int) = {
-		if(z > maze.length-1) maze(z+1)(y)(x).setCloseUp
+		if(z > 0) maze(z-1)(y)(x).setCloseUp
 	}
 	
 	def setCloseEst(x: Int, y: Int, z: Int) = {
@@ -191,7 +206,7 @@ class RecursiveBacktracking(_maze: Array[Array[Array[Cell]]], _mazeCopy: Array[A
 
 		if(inBounds && isGoal(x, y, z)) return true
 
-		if     (canAccess( x1, y1, z1, x, y, z, x, y-1, z) && findPath(x, y, z, x, y-1, z)) {
+		if(canAccess( x1, y1, z1, x, y, z, x, y-1, z) && findPath(x, y, z, x, y-1, z)) {
 			mark(x, y, z)
 			return true
 		} else if(canAccess( x1, y1, z1, x, y, z, x+1, y, z) && findPath(x, y, z, x+1, y, z)) {
@@ -227,7 +242,7 @@ class RecursiveBacktracking(_maze: Array[Array[Array[Cell]]], _mazeCopy: Array[A
 		maze(z)(y)(x).openUp
 	
 	def openDown(x: Int, y: Int, z: Int): Boolean = {
-		if(z < maze.length-1) maze(z+1)(y)(x).openUp
+		if(z > 0) maze(z-1)(y)(x).openUp
 		else    			false
 	}
 	
@@ -260,8 +275,8 @@ class RecursiveBacktracking(_maze: Array[Array[Array[Cell]]], _mazeCopy: Array[A
 			if(x1-x==(-1) && x2-x!=0) return openWest(x,y,z)
 			if(y1-y==1 && y2-y!=0) return openSouth(x,y,z)
 			if(y1-y==(-1) && y2-y!=0) return openNorth(x,y,z)
-			if(z1-z==1 && z2-z!=0) return openDown(x,y,z)
-			if(z1-z==(-1) && z2-z!=0) return openUp(x,y,z)
+			if(z1-z==1 && z2-z!=0) return openUp(x,y,z)
+			if(z1-z==(-1) && z2-z!=0) return openDown(x,y,z)
 		}
 		return false
 	}
