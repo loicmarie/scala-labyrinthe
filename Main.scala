@@ -141,7 +141,7 @@ class DataPanel(maze: Array[Array[Array[Cell]]], widthCell: Double, heightCell: 
       	for(i <- 0 to floor(j).length-1){
 	      	if(i == floor(j).length-1) g.fill(new Rectangle((x + widthCell).toInt, y.toInt, (widthBloc+1).toInt, (heightCell+1).toInt))
 	      	if(j == floor.length-1)    g.fill(new Rectangle(x.toInt, (y + heightCell).toInt, (widthCell+1).toInt, (heightBloc+1).toInt))
-      		if(currentDepth-1 > 0) openDown = maze(currentDepth-1)(j)(i).openUp
+      		if(currentDepth > 0) openDown = maze(currentDepth-1)(j)(i).openUp
           else openDown = false
           drawCell(g, x, y, floor(j)(i), openDown, widthBloc, heightBloc)
       		x = x + widthCell
