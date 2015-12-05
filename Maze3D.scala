@@ -63,6 +63,17 @@ class Cell() {
   def mark         = marked    = true
   def markTest         = markedTest    = true
   def unmark       = marked    = false
+  def unmarkTest       = markedTest    = false
+
+  def copy: Cell = {
+    var cell = new Cell()
+    if(openUp) cell.setOpenUp
+    if(openNorth) cell.setOpenNorth
+    if(openWest) cell.setOpenWest
+    if(marked) cell.mark
+    if(markedTest) cell.markTest
+    cell
+  }
 }
 
 class Grid(val width: Int, val height: Int, val depth: Int, val doors: Set[Door], val visited: Set[Loc]) {
