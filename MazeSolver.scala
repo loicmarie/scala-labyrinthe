@@ -127,6 +127,7 @@ class DeadEndFiller(_maze: Array[Array[Array[Cell]]], _mazeCopy: Array[Array[Arr
 	        for(x <- 0 to maze(z)(y).length-1){
 	          if(!maze(z)(y)(x).markedTest) mazeCopy(z)(y)(x).mark
 	          else mazeCopy(z)(y)(x).unmark
+	          if(isGoal(x,y,z)) mazeCopy(z)(y)(x).mark
 	        }
 	      }
 	    }
@@ -204,7 +205,10 @@ class RecursiveBacktracking(_maze: Array[Array[Array[Cell]]], _mazeCopy: Array[A
 			&& y>=0 && y < maze(0).length
 			&& x>=0 && x < maze(0)(0).length)
 
-		if(inBounds && isGoal(x, y, z)) return true
+		if(inBounds && isGoal(x, y, z)) {
+			mark(x, y, z)
+			return true
+		}
 
 		if(canAccess( x1, y1, z1, x, y, z, x, y-1, z) && findPath(x, y, z, x, y-1, z)) {
 			mark(x, y, z)
@@ -229,31 +233,32 @@ class RecursiveBacktracking(_maze: Array[Array[Array[Cell]]], _mazeCopy: Array[A
 	}
 	
 	def isGoal(x: Int, y: Int, z: Int): Boolean = {
-		return (x==maze(z)(y).length-1 && y==maze(z).length-1 && z==maze.length-1)
+		return (x==maze(0)(0).length-1 && y==maze(0).length-1 && z==maze.length-1)
 	}
 
 	def openNorth(x: Int, y: Int, z: Int): Boolean = 
-		maze(z)(y)(x).openNorth
+		return maze(z)(y)(x).openNorth
 	
 	def openWest(x: Int, y: Int, z: Int): Boolean = 
-		maze(z)(y)(x).openWest
+		return maze(z)(y)(x).openWest
 	
 	def openUp(x: Int, y: Int, z: Int): Boolean = 
-		maze(z)(y)(x).openUp
+		return maze(z)(y)(x).openUp
 	
 	def openDown(x: Int, y: Int, z: Int): Boolean = {
-		if(z > 0) maze(z-1)(y)(x).openUp
-		else    			false
+		if(z > 0) return maze(z-1)(y)(x).openUp
+		else    			return false
 	}
 	
 	def openEst(x: Int, y: Int, z: Int): Boolean = {
-		if(x < maze(z)(y).length-1) maze(z)(y)(x+1).openWest
-		else                      false
+		if(x < maze(z)(y).length-1) return maze(z)(y)(x+1).openWest
+		else                      return false
 	}
 	
 	def openSouth(x: Int, y: Int, z: Int): Boolean = {
-		if(y < maze(z).length-1) maze(z)(y+1)(x).openNorth
-		else    			   false
+		// if(y < maze(z).length-1 && isGoal(x,y+1,z)) println(maze(z)(y+1)(x).openNorth)
+		if(y < maze(z).length-1) return maze(z)(y+1)(x).openNorth
+		else    			   return false
 	}
 
 	def mark(x: Int, y: Int, z: Int) = {
@@ -265,18 +270,18 @@ class RecursiveBacktracking(_maze: Array[Array[Array[Cell]]], _mazeCopy: Array[A
 	}
 
 	def canAccess(x: Int, y: Int, z:Int, x1: Int, y1: Int, z1:Int, x2: Int, y2: Int, z2:Int): Boolean = {
-		
-		var inBounds = (z1>=0 && z1 < maze.length
-			&& y1>=0 && y1 < maze(0).length
-			&& x1>=0 && x1 < maze(0)(0).length)
 
-		if (math.sqrt((x1-x)*(x1-x)+(y1-y)*(y1-y)+(z1-z)*(z1-z))==1 && inBounds){
-			if(x1-x==1 && x2-x!=0) return openEst(x,y,z)
-			if(x1-x==(-1) && x2-x!=0) return openWest(x,y,z)
-			if(y1-y==1 && y2-y!=0) return openSouth(x,y,z)
-			if(y1-y==(-1) && y2-y!=0) return openNorth(x,y,z)
-			if(z1-z==1 && z2-z!=0) return openUp(x,y,z)
-			if(z1-z==(-1) && z2-z!=0) return openDown(x,y,z)
+		var inBoundsDest = (z2>=0 && z2 < maze.length
+			&& y2>=0 && y2 < maze(0).length
+			&& x2>=0 && x2 < maze(0)(0).length)
+
+		if (math.sqrt((x1-x)*(x1-x)+(y1-y)*(y1-y)+(z1-z)*(z1-z))==1 && inBoundsDest){
+				if(x2-x1==1 && x2-x!=0) return openEst(x1,y1,z1)
+				if(x2-x1==(-1) && x2-x!=0) return openWest(x1,y1,z1)
+				if(y2-y1==1 && y2-y!=0) return openSouth(x1,y1,z1)
+				if(y2-y1==(-1) && y2-y!=0) return openNorth(x1,y1,z1)
+				if(z2-z1==1 && z2-z!=0) return openUp(x1,y1,z1)
+				if(z2-z1==(-1) && z2-z!=0) return openDown(x1,y1,z1)
 		}
 		return false
 	}

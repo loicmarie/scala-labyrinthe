@@ -1,4 +1,6 @@
 import java.awt.{Color, Graphics2D, Dimension, Stroke, BasicStroke}
+import javax.swing.JFileChooser
+import java.io.File
 import scala.swing._
 import scala.swing.event._
 
@@ -14,7 +16,7 @@ object SecondSwingApp extends SimpleSwingApplication {
     maze(0)(0)(0).setOpenWest
     var mazeCopy = copyMaze(maze)
 
-  var widthApp  = 1000.0
+  var widthApp  = 1100.0
   var heightApp = 800.0
 
   var widthCell = widthApp/(maze(0)(0).length)
@@ -26,6 +28,8 @@ object SecondSwingApp extends SimpleSwingApplication {
   var widthScreen  = widthApp + widthBloc
   var heightScreen = heightApp + heightBloc
 
+    var time = 0
+
     var panel = new DataPanel(maze, widthCell, heightCell, widthBloc, heightBloc, depth) {
       preferredSize = new Dimension(widthScreen.toInt, heightScreen.toInt)
     }
@@ -35,7 +39,53 @@ object SecondSwingApp extends SimpleSwingApplication {
     val button4 = Button("Reset")(reset())
     val button5 = Button("-1")(changeDepth(-1))
     val button6 = Button("+1")(changeDepth(1))
+    val button7 = Button("Import file")(run())
     val button = Button("Maze generation")(generate())
+    var showTime = new Label {
+      text = "Time: " + (time/1000) + " µs"
+    }
+
+    def run() {
+        var chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setDialogTitle("Choose maze file");
+        // chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        // chooser.setAcceptAllFileFilterUsed(false);
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+          System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+          System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+          readMaze("" + chooser.getSelectedFile())
+        } else {
+          System.out.println("No Selection ");
+        }
+     }
+
+     def extractFile(file: File) {
+      // val source = io.Source.fromFile(file)
+      // val NEWLINE = 10
+      // var height = 0
+      // var getHeight = false
+      // var width = 0
+      // var getWidth = false
+      // var depth = 0
+      // var getDepth = false
+      // var prevNewline = false
+      // var arr = new Array[]
+      // for (char <- source) {
+      //   print(char.toUpper)
+      //   if(!getWidth) width = width+1
+      //   if(char.toByte == NEWLINE) {
+      //     prevNewline
+      //     print(source.length)
+      //     getWidth = true
+      //     height = height+1
+      //   }
+      // }
+      // println(" ")
+      // println(width)
+      // println(height)
+      // source.close
+     }
 
     updateView()
 
@@ -48,19 +98,23 @@ object SecondSwingApp extends SimpleSwingApplication {
 
     def deadEndFiller() {
       reset
+      time = System.nanoTime.toInt
       var mazeCopy1 = copyMaze(mazeCopy)
       var solver1 = new DeadEndFiller(copyMaze(mazeCopy), mazeCopy1)
       solver1.init
       maze = solver1.getSolution
+      time = System.nanoTime.toInt - time
       updateView()
     }
 
     def recursiveBacktracking() {
       reset
+      time = System.nanoTime.toInt
       var mazeCopy2 = copyMaze(mazeCopy)
       var solver2 = new RecursiveBacktracking(copyMaze(mazeCopy), mazeCopy2)
       solver2.init
       maze = solver2.getSolution
+      time = System.nanoTime.toInt - time
       updateView()
     }
 
@@ -68,14 +122,19 @@ object SecondSwingApp extends SimpleSwingApplication {
       panel = new DataPanel(maze, widthCell, heightCell, widthBloc, heightBloc, depth) {
         preferredSize = new Dimension(widthScreen.toInt, heightScreen.toInt)
       }
+      showTime = new Label {
+        text = "Time: " + (time/1000) + " µs"
+      }
       contents = new BoxPanel(Orientation.Vertical) {
         contents += new BoxPanel(Orientation.Horizontal) {
           contents += button
           contents += button2
           contents += button3
+          contents += showTime
           contents += button4
           contents += button5
           contents += button6
+          contents += button7
         }
         contents += panel
       }
@@ -101,6 +160,81 @@ object SecondSwingApp extends SimpleSwingApplication {
       }
       updateView()
     }
+
+
+    def readMaze(filePath : String){
+      println("Read maze from file : "+filePath);
+
+      var WIDTH = 0
+      var HEIGHT = 0
+      var DEPTH = 0
+      var cells = Array.ofDim[Int](0, 0, 0)
+
+      // Get all lines from the file
+      val lines = io.Source.fromFile(filePath).getLines
+
+      var indexLvl = 0
+      var indexLine = 0
+      var indexChar = 0
+
+      // for each line of the file
+      lines.foreach(line => {
+        // The first line of the file (init dimensions)
+        if(indexLine == 0 && indexLvl == 0){
+          // set the width and height and depth
+          val dim = line.split(" ");
+          if(dim.length >= 2) {
+            WIDTH = dim(0).toInt;
+            HEIGHT = dim(1).toInt;
+            if(dim.length == 3)
+              DEPTH = dim(2).toInt;
+            else
+              DEPTH = 1
+            cells = Array.tabulate(WIDTH)(i => Array.tabulate(HEIGHT)(j => Array.tabulate(DEPTH)(k => 0)))
+          } else {
+            println("Bad file (dimensions)")
+            return
+          }
+        } else {
+          // empty line 
+          if(line.length == 0) {
+            // start new maze lvl
+            indexLine = 0;
+            indexLvl += 1;
+          } else {
+            // Read the line
+            indexChar = 0;
+            val charList = line.toList
+
+            // for each char of the line
+            // var chars = new Array[Int](WIDTH)
+            // var count = 0
+            charList.foreach(char => {
+              // chars(count) = char
+              cells(indexChar)(indexLine-1)(indexLvl) = char
+              // if(char.toInt == 49) {// It is a wall
+              //   cells(indexChar)(indexLine-1)(indexLvl).isWall = true;
+              // } else if(char.toInt == 50) {// can go up from this cell
+              //   cells(indexChar)(indexLine-1)(indexLvl).accessUp = true;
+              // } else if(char.toInt == 51) {// can go down from this cell
+              //   cells(indexChar)(indexLine-1)(indexLvl).accessDown = true;
+              // } else if(char.toInt == 52) {// can go up and down from this cell
+              //   cells(indexChar)(indexLine-1)(indexLvl).accessUp = true;
+              //   cells(indexChar)(indexLine-1)(indexLvl).accessDown = true;
+              // }
+              indexChar+= 1
+            })  
+            // floor(countFloors) = chars                
+          }
+        }
+
+        indexLine+=1
+      });
+      print(cells)
+    }
+
+
+
   }
 
 
