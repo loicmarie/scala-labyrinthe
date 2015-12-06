@@ -7,12 +7,10 @@ import scala.swing.event._
 object SecondSwingApp extends SimpleSwingApplication {
   def top = new MainFrame {
 
-    val generator = new Maze3D(30, 30, 3)
+    val generator = new Maze3D(30, 30, 5)
     var maze = generator.build
 
     var depth = 0
-
-    //maze(maze.length-1)(maze(maze.length-1).length-1)(maze(maze(maze.length-1).length-1).length-1).setOpenEst
     maze(0)(0)(0).setOpenWest
     var mazeCopy = copyMaze(maze)
 
@@ -60,33 +58,6 @@ object SecondSwingApp extends SimpleSwingApplication {
         }
      }
 
-     def extractFile(file: File) {
-      // val source = io.Source.fromFile(file)
-      // val NEWLINE = 10
-      // var height = 0
-      // var getHeight = false
-      // var width = 0
-      // var getWidth = false
-      // var depth = 0
-      // var getDepth = false
-      // var prevNewline = false
-      // var arr = new Array[]
-      // for (char <- source) {
-      //   print(char.toUpper)
-      //   if(!getWidth) width = width+1
-      //   if(char.toByte == NEWLINE) {
-      //     prevNewline
-      //     print(source.length)
-      //     getWidth = true
-      //     height = height+1
-      //   }
-      // }
-      // println(" ")
-      // println(width)
-      // println(height)
-      // source.close
-     }
-
     updateView()
 
     def generate() {
@@ -119,6 +90,15 @@ object SecondSwingApp extends SimpleSwingApplication {
     }
 
     def updateView(){
+
+      widthCell = widthApp/(maze(0)(0).length)
+      heightCell = heightApp/(maze(0).length)
+
+      widthBloc = widthCell/2
+      heightBloc = heightCell/2
+
+      widthScreen  = widthApp + widthBloc
+      heightScreen = heightApp + heightBloc
       panel = new DataPanel(maze, widthCell, heightCell, widthBloc, heightBloc, depth) {
         preferredSize = new Dimension(widthScreen.toInt, heightScreen.toInt)
       }
@@ -190,7 +170,7 @@ object SecondSwingApp extends SimpleSwingApplication {
               DEPTH = dim(2).toInt;
             else
               DEPTH = 1
-            cells = Array.tabulate(WIDTH)(i => Array.tabulate(HEIGHT)(j => Array.tabulate(DEPTH)(k => 0)))
+            cells = Array.tabulate(DEPTH)(i => Array.tabulate(HEIGHT)(j => Array.tabulate(WIDTH)(k => 0)))
           } else {
             println("Bad file (dimensions)")
             return
@@ -211,17 +191,17 @@ object SecondSwingApp extends SimpleSwingApplication {
             // var count = 0
             charList.foreach(char => {
               // chars(count) = char
-              cells(indexChar)(indexLine-1)(indexLvl) = char
-              // if(char.toInt == 49) {// It is a wall
-              //   cells(indexChar)(indexLine-1)(indexLvl).isWall = true;
-              // } else if(char.toInt == 50) {// can go up from this cell
-              //   cells(indexChar)(indexLine-1)(indexLvl).accessUp = true;
-              // } else if(char.toInt == 51) {// can go down from this cell
-              //   cells(indexChar)(indexLine-1)(indexLvl).accessDown = true;
-              // } else if(char.toInt == 52) {// can go up and down from this cell
-              //   cells(indexChar)(indexLine-1)(indexLvl).accessUp = true;
-              //   cells(indexChar)(indexLine-1)(indexLvl).accessDown = true;
-              // }
+              if(char.toInt == 49) {// It is a wall
+                cells(indexLvl)(indexLine-1)(indexChar) = 1;
+              } else if(char.toInt == 50) {// can go up from this cell
+                cells(indexLvl)(indexLine-1)(indexChar) = 2;
+              } else if(char.toInt == 51) {// can go down from this cell
+                cells(indexLvl)(indexLine-1)(indexChar) = 3;
+              } else if(char.toInt == 52) {// can go up and down from this cell
+                cells(indexLvl)(indexLine-1)(indexChar) = 4;
+              } else {
+                cells(indexLvl)(indexLine-1)(indexChar) = 0;
+              }
               indexChar+= 1
             })  
             // floor(countFloors) = chars                
@@ -230,7 +210,72 @@ object SecondSwingApp extends SimpleSwingApplication {
 
         indexLine+=1
       });
-      print(cells)
+
+      var y = 0
+      var z = 0
+      var num = 0
+      var xMax = (cells(0)(0).length-2)/2
+      var yMax = (cells(0).length-2)/2
+      var res = Array.ofDim[Cell](cells.length, cells(0).length-2, cells(0)(0).length-2)
+      var north = 0
+      var west  = 0
+      var xCurrent  = 0
+      var yCurrent  = 0
+      // if(cells(0).length%2==1) yMax = (cells(0).length-1)/2
+      // else 
+      // yMax = 
+      // if(cells(0)(0).length%2==1) xMax = (cells(0)(0).length-1)/2
+      // else 
+      // xMax = 
+      // for(z <- 0 to cells.length-1){
+      //   for(y <- 1 to 1 by -1){
+      //     north = y*2 - 1
+      //     yCurrent = y*2
+      //     for(x <- xMax to 1 by -1){
+      //       west = x*2 - 1
+      //       xCurrent = x*2
+      //       res(z)(y-1)(x-1) = new Cell()
+      //       if(cells(z)(yCurrent)(xCurrent) == 2 || cells(z)(yCurrent)(xCurrent) == 4){
+      //         res(z)(y-1)(x-1).setOpenUp
+      //       } 
+      //       if(cells(z)(north)(xCurrent) == 0 && (cells(z)(yCurrent)(xCurrent) == 0 || cells(z)(yCurrent)(xCurrent) == 2 || cells(z)(yCurrent)(xCurrent) == 4)){
+      //         res(z)(y-1)(x-1).setOpenNorth
+      //       } 
+      //       if(cells(z)(yCurrent)(west) == 0 && (cells(z)(yCurrent)(xCurrent) == 0 || cells(z)(yCurrent)(xCurrent) == 2 || cells(z)(yCurrent)(xCurrent) == 4)){
+      //         res(z)(y-1)(x-1).setOpenWest
+      //       }
+      //     }
+      //     println("")
+      //   }
+      //   println("")
+      //   println("")
+
+      // }
+
+
+      for(z <- 0 to cells.length-1){
+        for(y <- 1 to cells(0).length-2){
+          north = y*2 - 1
+          yCurrent = y*2
+          for(x <- 1 to cells(0)(0).length-2){
+            res(z)(y-1)(x-1) = new Cell()
+            if(cells(z)(y)(x) == 2 || cells(z)(y)(x) == 4){
+              res(z)(y-1)(x-1).setOpenUp
+            } 
+            if(y-1 > 0 && cells(z)(y-1)(x) == 0 && (cells(z)(y)(x) == 0 || cells(z)(y)(x) == 2 || cells(z)(y)(x) == 4)){
+              res(z)(y-1)(x-1).setOpenNorth
+            } 
+            if(x-1 > 0 && cells(z)(y)(x-1) == 0 && (cells(z)(y)(x) == 0 || cells(z)(y)(x) == 2 || cells(z)(y)(x) == 4)){
+              res(z)(y-1)(x-1).setOpenWest
+            }
+          }
+        }
+      }
+      res(0)(0)(0).setOpenWest
+      res(0)(0)(0).mark
+      maze = res
+      mazeCopy = copyMaze(maze)
+      updateView()
     }
 
 

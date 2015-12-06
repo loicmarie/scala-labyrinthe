@@ -27,7 +27,19 @@ class Maze3D(_width: Int, _height: Int, _depth: Int) {
   var depth  = _depth
  
   def shuffle[T](set: Set[T]): List[T] = Random.shuffle(set.toList)
- 
+  
+  /*
+  F : ENSEMBLE des arêtes de l'arbre
+  Initialiser F à vide 
+  Marquer arbitrairement un sommet
+  Tant Que  il existe un sommet non marqué adjacent à un sommet marqué 
+            Sélectionner un sommet y non marqué adjacent à un sommet marqué x    
+            tel que (x,y) est l'arête sortante de plus faible poids
+            F := F   {(x,y)}
+            Marquer y
+  Fin TantQue 
+  Retourner T=(V,F)
+  */
   def buildImpl(current: Loc, grid: Grid): Grid = {
     var newgrid = grid.markVisited(current)
     val nbors = shuffle(grid.neighbors(current))
@@ -42,7 +54,7 @@ class Maze3D(_width: Int, _height: Int, _depth: Int) {
   def build(): Array[Array[Array[Cell]]] = {
     val exit = Loc(width-1, height-1, depth-1)
     val grid = buildImpl(exit, new Grid(width, height, depth, Set(), Set()))
-    grid.printMaze
+    // grid.printMaze
 	  grid.get
   }  
 }
