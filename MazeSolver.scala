@@ -210,22 +210,22 @@ class RecursiveBacktracking(_maze: Array[Array[Array[Cell]]], _mazeCopy: Array[A
 			return true
 		}
 
-		if(canAccess( x1, y1, z1, x, y, z, x, y-1, z) && findPath(x, y, z, x, y-1, z)) {
-			mark(x, y, z)
-			return true
-		} else if(canAccess( x1, y1, z1, x, y, z, x+1, y, z) && findPath(x, y, z, x+1, y, z)) {
-			mark(x, y, z)
-			return true
-		} else if(canAccess( x1, y1, z1, x, y, z, x, y+1, z) && findPath(x, y, z, x, y+1, z)) {
+		if(canAccess( x1, y1, z1, x, y, z, x, y, z+1) && findPath(x, y, z, x, y, z+1)) {
 			mark(x, y, z)
 			return true
 		} else if(canAccess( x1, y1, z1, x, y, z, x-1, y, z) && findPath(x, y, z, x-1, y, z)) {
 			mark(x, y, z)
 			return true
+		} else if(canAccess( x1, y1, z1, x, y, z, x, y-1, z) && findPath(x, y, z, x, y-1, z)) {
+			mark(x, y, z)
+			return true
 		} else if(canAccess( x1, y1, z1, x, y, z, x, y, z-1) && findPath(x, y, z, x, y, z-1)) {
 			mark(x, y, z)
 			return true
-		} else if(canAccess( x1, y1, z1, x, y, z, x, y, z+1) && findPath(x, y, z, x, y, z+1)) {
+		} else if(canAccess( x1, y1, z1, x, y, z, x, y+1, z) && findPath(x, y, z, x, y+1, z)) {
+			mark(x, y, z)
+			return true
+		} else if(canAccess( x1, y1, z1, x, y, z, x+1, y, z) && findPath(x, y, z, x+1, y, z)) {
 			mark(x, y, z)
 			return true
 		} else return false

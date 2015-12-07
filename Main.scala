@@ -159,7 +159,6 @@ object SecondSwingApp extends SimpleSwingApplication {
 
       // for each line of the file
       lines.foreach(line => {
-        println("ok")
         // The first line of the file (init dimensions)
         if(indexLine == 0 && indexLvl == 0){
           // set the width and height and depth
@@ -192,7 +191,6 @@ object SecondSwingApp extends SimpleSwingApplication {
             // var count = 0
             charList.foreach(char => {
               // chars(count) = char
-              println("ok2")
               if(char.toInt == 49) {// It is a wall
                 cells(indexLvl)(indexLine-1)(indexChar) = 1;
               } else if(char.toInt == 50) {// can go up from this cell
