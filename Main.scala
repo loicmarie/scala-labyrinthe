@@ -159,6 +159,7 @@ object SecondSwingApp extends SimpleSwingApplication {
 
       // for each line of the file
       lines.foreach(line => {
+        println("ok")
         // The first line of the file (init dimensions)
         if(indexLine == 0 && indexLvl == 0){
           // set the width and height and depth
@@ -191,6 +192,7 @@ object SecondSwingApp extends SimpleSwingApplication {
             // var count = 0
             charList.foreach(char => {
               // chars(count) = char
+              println("ok2")
               if(char.toInt == 49) {// It is a wall
                 cells(indexLvl)(indexLine-1)(indexChar) = 1;
               } else if(char.toInt == 50) {// can go up from this cell
@@ -262,10 +264,10 @@ object SecondSwingApp extends SimpleSwingApplication {
             if(cells(z)(y)(x) == 2 || cells(z)(y)(x) == 4){
               res(z)(y-1)(x-1).setOpenUp
             } 
-            if(y-1 > 0 && cells(z)(y-1)(x) == 0 && (cells(z)(y)(x) == 0 || cells(z)(y)(x) == 2 || cells(z)(y)(x) == 4)){
+            if(y-1 > 0 && (cells(z)(y-1)(x) == 0 || cells(z)(y-1)(x) == 2 || cells(z)(y-1)(x) == 4 || cells(z)(y-1)(x) == 3) && (cells(z)(y)(x) == 0 || cells(z)(y)(x) == 2 || cells(z)(y)(x) == 4 || cells(z)(y)(x) == 3)){
               res(z)(y-1)(x-1).setOpenNorth
             } 
-            if(x-1 > 0 && cells(z)(y)(x-1) == 0 && (cells(z)(y)(x) == 0 || cells(z)(y)(x) == 2 || cells(z)(y)(x) == 4)){
+            if(x-1 > 0 && (cells(z)(y)(x-1) == 0 || cells(z)(y)(x-1) == 2 || cells(z)(y)(x-1) == 4 || cells(z)(y)(x-1) == 3) && (cells(z)(y)(x) == 0 || cells(z)(y)(x) == 2 || cells(z)(y)(x) == 4 || cells(z)(y)(x) == 3)){
               res(z)(y-1)(x-1).setOpenWest
             }
           }
